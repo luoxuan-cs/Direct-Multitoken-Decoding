@@ -1,4 +1,4 @@
 # Direct-Multitoken-Decoding
 The official repo for the paper Direct Multi-token Decoding
 
-Coming soon
+The folder contains the training code for Direct Multi-token Decoding
