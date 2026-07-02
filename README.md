@@ -1,9 +1,6 @@
 # Direct Multi-Token Decoding (DMTD)
 
-Official training code for the paper **[Direct Multi-Token Decoding](https://arxiv.org/abs/2510.11958)**
-
-\
-
+Official training code for the paper **[Direct Multi-Token Decoding](https://arxiv.org/abs/2510.11958)**  
 🤗 Model & inference code: [https://huggingface.co/xuan-luo/DMTD-Qwen3-4B](https://huggingface.co/xuan-luo/DMTD-Qwen3-4B)
 
 **Direct Multi-Token Decoding (DMTD)** reuses the *late* ("decoding") layers of a decoder-only LLM to directly emit multiple tokens per cycle. DMTD adds **no extra parameters, no draft model, and no post-generation verification** — it simply fine-tunes the original network to decode in fixed multi-token cycles,
