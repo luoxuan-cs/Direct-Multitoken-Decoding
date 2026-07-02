@@ -47,7 +47,7 @@ training launcher checks this and prints a fix hint if they are missing.
 ## Training
 
 Training uses [ms-swift](https://github.com/modelscope/ms-swift) SFT on the
-`[a-m-team/AM-Thinking-v1-Distilled](https://huggingface.co/datasets/a-m-team/AM-Thinking-v1-Distilled)`
+[a-m-team/AM-Thinking-v1-Distilled](https://huggingface.co/datasets/a-m-team/AM-Thinking-v1-Distilled)
 dataset. The pipeline has three steps: **download data → process data → train**.
 
 ### Step 1 — Download the dataset
