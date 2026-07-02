@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.env
+datasets/raw-am-distilled/
+datasets/am-thinking-messages-jsonl/
+datasets/*-swift-cached-*/
+*.safetensors
