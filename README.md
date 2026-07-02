@@ -79,8 +79,7 @@ python datasets/export_am_messages_for_swift.py \
 - `--skip_bad_rows`: skip un-parseable rows instead of aborting.
 
 **2b. Pre-tokenize into a swift** `cached_dataset` — `export_swift_cached.sh` runs `swift export`
-once so that later training runs skip the tokenize stage. The cache is keyed only on
-(tokenizer + chat template + max_length + loss_scale), so all DMTD variants share the same cache.
+once so that later training runs skip the tokenize stage.
 
 ```bash
 MODEL_PATH="$MODEL_PATH" \
