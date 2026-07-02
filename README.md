@@ -135,7 +135,3 @@ Useful environment overrides:
   url     = {https://arxiv.org/abs/2510.11958}
 }
 ```
-
-Training data: `[a-m-team/AM-Thinking-v1-Distilled](https://huggingface.co/datasets/a-m-team/AM-Thinking-v1-Distilled)`
-(arXiv:2505.14464). Please also cite the dataset if you use it. The dataset is released for
-**research purposes only**.
