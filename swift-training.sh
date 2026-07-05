@@ -2,7 +2,7 @@
 # MS-SWIFT SFT for DMTD Qwen3 (8x A100 40GB)
 # Reference: https://swift.readthedocs.io/en/v3.12/BestPractices/Qwen3-Best-Practice.html
 #
-# Uses pre-built `cached_dataset` under this directory (paper-exact 100k).
+# Uses pre-built `cached_dataset` under datasets/ (am-thinking, 4096, ignore_empty_think).
 # Packing (packing_length=4096) runs during training, not in the cache.
 
 set -euo pipefail
@@ -16,14 +16,10 @@ REGISTER_PLUGIN="${REGISTER_PLUGIN:-${SCRIPT_DIR}/register_dmtdqwen3.py}"
 
 MAX_LENGTH="${MAX_LENGTH:-4096}"
 LOSS_SCALE="${LOSS_SCALE:-ignore_empty_think}"
-CACHED_DATASET_DIR="${CACHED_DATASET_DIR:-${SCRIPT_DIR}/paper-exact-swift-cached-${MAX_LENGTH}-${LOSS_SCALE}}"
-
-# Optional: one-time build if cache is missing (requires messages JSONL in DATASET_DIR).
 DATASETS_ROOT="${DATASETS_ROOT:-${SCRIPT_DIR}/datasets}"
-DATASET_DIR="${DATASET_DIR:-${DATASETS_ROOT}/paper-exact-100k-messages-jsonl}"
-EXPORT_CACHED_SCRIPT="${EXPORT_CACHED_SCRIPT:-${DATASETS_ROOT}/export_swift_cached.sh}"
+CACHED_DATASET_DIR="${CACHED_DATASET_DIR:-${DATASETS_ROOT}/am-thinking-swift-cached-${MAX_LENGTH}-${LOSS_SCALE}}"
 
-OUTPUT_DIR="${OUTPUT_DIR:-${SCRIPT_DIR}/paper-exact-E0D4C4_ctx4096_lr1e-4_1epoch}"
+OUTPUT_DIR="${OUTPUT_DIR:-${SCRIPT_DIR}/am-thinking-E0D8C4_ctx4096_lr1e-4_1epoch}"
 
 CONDA_ENV="${CONDA_ENV:-llm-swift}"
 # Resolved from PATH by default; activate your conda env before running, or set SWIFT_BIN explicitly.
@@ -45,7 +41,7 @@ export NCCL_DEBUG="${NCCL_DEBUG:-WARN}"
 # Training launch
 ###################
 # Global batch size = NPROC * per_device_train_batch_size * gradient_accumulation_steps
-#                   = 8 * 1 * 16 = 128
+#                   = 8 * 1 * 64 = 512
 
 mkdir -p "${OUTPUT_DIR}"
 
@@ -68,16 +64,9 @@ if [[ -L "${TOKENIZER_FILE}" ]] || [[ ! -f "${TOKENIZER_FILE}" ]]; then
 fi
 
 if [[ ! -d "${CACHED_DATASET_DIR}/train" ]]; then
-    echo "Swift cached_dataset not found: ${CACHED_DATASET_DIR}/train"
-    echo "Building once via export_swift_cached.sh (requires messages JSONL at ${DATASET_DIR}) ..."
-    MODEL_PATH="${MODEL_PATH}" \
-    REGISTER_PLUGIN="${REGISTER_PLUGIN}" \
-    DATASET_DIR="${DATASET_DIR}" \
-    MAX_LENGTH="${MAX_LENGTH}" \
-    LOSS_SCALE="${LOSS_SCALE}" \
-    OUTPUT_DIR="${CACHED_DATASET_DIR}" \
-    SWIFT_BIN="${SWIFT_BIN}" \
-        bash "${EXPORT_CACHED_SCRIPT}"
+    echo "ERROR: Swift cached_dataset not found: ${CACHED_DATASET_DIR}/train"
+    echo "Expected pre-built cache at: datasets/am-thinking-swift-cached-${MAX_LENGTH}-${LOSS_SCALE}/train"
+    exit 1
 fi
 
 echo "Model:           ${MODEL_PATH}"
@@ -100,11 +89,12 @@ export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES}"
     --attn_impl flash_attn \
     --use_liger_kernel true \
     --num_train_epochs 1 \
-    --per_device_train_batch_size 1 \
-    --gradient_accumulation_steps 16 \
+    --per_device_train_batch_size 2 \
+    --gradient_accumulation_steps 32 \
     --learning_rate 1e-4 \
     --lr_scheduler_type linear \
     --warmup_ratio 0.1 \
+    --adam_beta1 0.9 \
     --adam_beta2 0.95 \
     --max_grad_norm 1.0 \
     --packing true \
