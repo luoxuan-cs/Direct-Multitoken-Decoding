@@ -98,6 +98,7 @@ export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES}"
     --adam_beta2 0.95 \
     --max_grad_norm 1.0 \
     --packing true \
+    --padding_free false \
     --packing_length "${MAX_LENGTH}" \
     --truncation_strategy left \
     --gradient_checkpointing true \
